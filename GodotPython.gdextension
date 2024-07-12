@@ -1,0 +1,13 @@
+[configuration]
+entry_symbol = "gdext_rust_init"
+compatibility_minimum = 4.1
+
+[libraries]
+linux.debug.x86_64 = "res://godot_python/target/debug/libgodot_python.so"
+linux.release.x86_64 = "res://godot_python/target/release/libgodot_python.so"
+windows.debug.x86_64 = "res://godot_python/target/debug/godot_python.dll"
+windows.release.x86_64 = "res://godot_python/target/release/godot_python.dll"
+macos.debug = "res://godot_python/target/debug/libgodot_python.dylib"
+macos.release = "res://godot_python/target/release/libgodot_python.dylib"
+macos.debug.arm64 = "res://godot_python/target/debug/libgodot_python.dylib"
+macos.release.arm64 = "res://godot_python/target/release/libgodot_python.dylib"
