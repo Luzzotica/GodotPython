@@ -1,30 +1,41 @@
 import sys
+from rust_stdout import rs_print, rs_print_err
 
 class CustomStream:
-    def __init__(self, original_stream, callback):
+
+    def __init__(self, original_stream, callback, start="", end=""):
         self.original_stream = original_stream
         self.callback = callback
+        self.buffer = start
+        self.start = start
+        self.end = end
 
     def write(self, message):
-        self.original_stream.write(message)
-        self.callback(message)
+        self.buffer += message
+        if "\n" == message:
+            self.buffer += self.end
+            self.flush()
 
     def flush(self):
-        self.original_stream.flush()
+        if self.buffer:
+            self.original_stream.write(self.buffer)
+            self.callback(self.buffer)
+            self.buffer = self.start
 
-def my_callback(message):
-    print(f"Custom function called with message: {message}")
 
-# Save the original stdout
-original_stdout = sys.stdout
+std = sys.stdout
+err = sys.stderr
 
-# Set the custom stream as the new stdout
-sys.stdout = CustomStream(original_stdout, my_callback)
 
-# Test the custom stdout
-print("Hello, World!")
+def set_rust_stdout(rstd):
+    # Set the custom stream as the new stdout
+    sys.stdout = CustomStream(std, rstd.rs_print)
+    sys.stderr = CustomStream(
+        err, rstd.rs_print_err, start="[color=red]", end="[/color]"
+    )
+    # print("swag from python")
+    # print("swag from python 2")
 
-# Restore the original stdout
-sys.stdout = original_stdout
 
-print("Back to normal stdout")
+sys.stdout = CustomStream(std, rs_print)
+sys.stderr = CustomStream(err, rs_print_err, start="[color=red]", end="[/color]")
