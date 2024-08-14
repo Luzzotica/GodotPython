@@ -1,0 +1,97 @@
+[gd_scene load_steps=4 format=3 uid="uid://d3m11le74kum"]
+
+[ext_resource type="Script" path="res://godot_python_scripts/python_vm.gd" id="1_etjag"]
+[ext_resource type="PackedScene" uid="uid://d2u5uvs1ooa5f" path="res://godot_python_scripts/godot_python_vm_wrapper.tscn" id="2_52rga"]
+[ext_resource type="PackedScene" uid="uid://bkhhjg16jryk0" path="res://godot_python_scripts/python_module_loader.tscn" id="3_qg10l"]
+
+[node name="PythonVM" type="Node"]
+process_mode = 3
+script = ExtResource("1_etjag")
+python_vm_wrapper = ExtResource("2_52rga")
+
+[node name="Modules" type="Node" parent="."]
+
+[node name="Vector2" parent="Modules" instance=ExtResource("3_qg10l")]
+module_name = "vector2"
+module_code = "class Vector2():
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+    def update(self, d):
+        self.x = d[\"x\"]
+        self.y = d[\"y\"]
+
+    def __str__(self):
+        return f\"Vector2(x: {self.x}, y: {self.y})\"
+
+    @staticmethod
+    def from_dict(d):
+        return Vector2(d[\"x\"], d[\"y\"])"
+
+[node name="Enemy" parent="Modules" instance=ExtResource("3_qg10l")]
+module_name = "enemy"
+module_code = "from vector2 import Vector2
+
+class Enemy():
+    def __init__(self, id, health_max, element):
+        self.id = id
+        self.health = health_max
+        self.health_max = health_max
+        self.global_position = Vector2(0, 0)
+        self.velocity = Vector2(0, 0)
+        self.element = element
+
+    def set_velocity(self, v):
+        self.velocity = v
+
+    def set_health(self, v):
+        self.health = v
+
+    def set_global_position(self, v):
+        self.global_position = v
+
+    def __str__(self):
+        return (f\"Enemy Status:\\n\"
+                f\"Health: {self.health}/{self.health_max}\\n\"
+                f\"Position: {self.global_position}\\n\"
+                f\"Velocity: {self.velocity}\\n\"
+                f\"Element: {self.element}\")
+"
+
+[node name="EnemyManager" parent="Modules" instance=ExtResource("3_qg10l")]
+module_name = "enemy_manager"
+module_code = "from vector2 import Vector2
+from enemy import Enemy
+
+enemies = {}
+next_enemy_id = 0
+
+def create_enemy(health_max, element):
+	global next_enemy_id
+	global enemies
+	next_enemy_id += 1
+	e = Enemy(next_enemy_id, health_max, element)
+
+	enemies[next_enemy_id] = e
+	return next_enemy_id
+
+
+def get_enemy(enemy_id):
+	global enemies
+	return enemies[enemy_id]
+
+
+def update_enemy(enemy_id, **kwargs):
+	global enemies
+	if 'global_position' in kwargs:
+		enemies[enemy_id].global_position = Vector2.from_dict(kwargs['global_position'])
+	if 'velocity' in kwargs:
+		enemies[enemy_id].velocity = Vector2.from_dict(kwargs['velocity'])
+	if 'health' in kwargs:
+		enemies[enemy_id].health = kwargs['health']
+
+
+def delete_enemy(enemy_id):
+	global enemies
+	del enemies[enemy_id]"

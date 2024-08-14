@@ -1,19 +1,15 @@
 [gd_scene load_steps=6 format=3 uid="uid://bbxr0nqmq7q2n"]
 
 [ext_resource type="Script" path="res://godot_python_test/test_scene.gd" id="1_1gjk4"]
-[ext_resource type="Script" path="res://godot_python_test/python_edit.gd" id="2_jc1qf"]
+[ext_resource type="PackedScene" uid="uid://ctuvyuh3oegea" path="res://godot_python_test/python_edit.tscn" id="2_15h6i"]
+[ext_resource type="PackedScene" uid="uid://d2u5uvs1ooa5f" path="res://godot_python_scripts/godot_python_vm_wrapper.tscn" id="2_gmrxc"]
 [ext_resource type="Texture2D" uid="uid://cmbdobdowg4wu" path="res://godot_python_test/Circle.png" id="3_r4jvu"]
-
-[sub_resource type="CodeHighlighter" id="CodeHighlighter_u2cfl"]
-number_color = Color(0.706951, 1, 0.680788, 1)
-symbol_color = Color(0.498272, 0.814509, 0.892717, 1)
-function_color = Color(0.843305, 0.838609, 0.446113, 1)
-member_variable_color = Color(0.945798, 0.477313, 0.641247, 1)
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_lvkjy"]
 
 [node name="Node2D" type="Node2D"]
 script = ExtResource("1_1gjk4")
+python_vm_wrapper = ExtResource("2_gmrxc")
 
 [node name="UI" type="CanvasLayer" parent="."]
 
@@ -43,31 +39,55 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="CodeEdit" type="CodeEdit" parent="UI/Control/Col"]
+[node name="PythonEdit" parent="UI/Control/Col" instance=ExtResource("2_15h6i")]
 layout_mode = 2
-size_flags_vertical = 3
-theme_override_font_sizes/font_size = 24
 text = "## This is the function that is called 
 ## whenever you press a key
-## The key pressed is passed into the 
-## variable \"i\"
+## The key pressed is passed into the variable \"i\"
+## Pressed is true/false depending on up/down on the key
 ## 
 ## Return \"up\", \"down\", \"left\", or \"right\" to have your character 
 ## move in that particular direction
-def input_down(i):
+def input(i, pressed):
+	if i == \"W\" and pressed:
+		return \"up\"
+	elif i == \"S\" and pressed:
+		return \"down\"
+	elif i == \"A\" and pressed:
+		return \"left\"
+	elif i == \"D\" and pressed:
+		return \"right\"
 	return i
 
-## This function is called whenever
-## the key you press is released
-def input_up(i):
-	return i"
-minimap_draw = true
-syntax_highlighter = SubResource("CodeHighlighter_u2cfl")
-gutters_draw_line_numbers = true
-code_completion_enabled = true
-indent_automatic = true
-auto_brace_completion_highlight_matching = true
-script = ExtResource("2_jc1qf")
+
+def args_test(*args):
+	print(args)
+
+
+def kwargs_test(**kwargs):
+	print(kwargs)
+
+
+def i_kwargs_test(i, **kwargs):
+	print(i, kwargs)"
+script = null
+
+[node name="Margin" type="MarginContainer" parent="UI/Control/Col"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="Output" type="RichTextLabel" parent="UI/Control/Col/Margin"]
+custom_minimum_size = Vector2(0, 200)
+layout_mode = 2
+theme_override_font_sizes/bold_italics_font_size = 30
+theme_override_font_sizes/italics_font_size = 30
+theme_override_font_sizes/mono_font_size = 30
+theme_override_font_sizes/normal_font_size = 30
+theme_override_font_sizes/bold_font_size = 30
+scroll_following = true
 
 [node name="Row" type="HBoxContainer" parent="UI/Control/Col"]
 layout_mode = 2
@@ -89,8 +109,6 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 24
 horizontal_alignment = 2
 
-[node name="PythonRunner" type="PythonRunner" parent="."]
-
 [node name="CharacterBody2D" type="CharacterBody2D" parent="."]
 position = Vector2(250, 300)
 
@@ -101,4 +119,6 @@ shape = SubResource("CircleShape2D_lvkjy")
 scale = Vector2(0.4, 0.4)
 texture = ExtResource("3_r4jvu")
 
+[connection signal="focus_entered" from="UI/Control/Col/PythonEdit" to="." method="_on_python_edit_focus_entered"]
+[connection signal="focus_exited" from="UI/Control/Col/PythonEdit" to="." method="_on_python_edit_focus_exited"]
 [connection signal="pressed" from="UI/Control/Col/Row/Deploy" to="." method="_on_deploy_pressed"]

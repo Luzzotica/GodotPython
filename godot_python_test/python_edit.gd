@@ -1,7 +1,5 @@
 extends CodeEdit
 
-@export var swag: String
-
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
   var keyword_color = Color(0.5, 0.4, 0.9)

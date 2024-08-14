@@ -1,0 +1,20 @@
+[gd_scene load_steps=3 format=3 uid="uid://ctuvyuh3oegea"]
+
+[ext_resource type="Script" path="res://godot_python_test/python_edit.gd" id="1_3wvqm"]
+
+[sub_resource type="CodeHighlighter" id="CodeHighlighter_qhee4"]
+number_color = Color(0.706951, 1, 0.680788, 1)
+symbol_color = Color(0.498272, 0.814509, 0.892717, 1)
+function_color = Color(0.843305, 0.838609, 0.446113, 1)
+member_variable_color = Color(0.945798, 0.477313, 0.641247, 1)
+
+[node name="PythonEdit" type="CodeEdit"]
+size_flags_vertical = 3
+theme_override_font_sizes/font_size = 24
+minimap_draw = true
+syntax_highlighter = SubResource("CodeHighlighter_qhee4")
+gutters_draw_line_numbers = true
+code_completion_enabled = true
+indent_automatic = true
+auto_brace_completion_highlight_matching = true
+script = ExtResource("1_3wvqm")

@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://bkhhjg16jryk0"]
+
+[ext_resource type="Script" path="res://godot_python_scripts/python_module_loader.gd" id="1_ncihh"]
+
+[node name="PythonModuleLoader" type="Node"]
+script = ExtResource("1_ncihh")
